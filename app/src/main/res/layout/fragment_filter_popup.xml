@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="10dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Begin Date"
+        android:layout_marginTop="10dp"
+        android:id="@+id/begin_date_title"
+        android:textColor="@color/colorAccent"
+        android:layout_centerHorizontal="true"/>
+    <TextView
+        android:layout_marginTop="5dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/begin_date"
+        android:text="2017-03-20"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/begin_date_title"
+        android:fontFamily="sans-serif" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sort Order"
+        android:id="@+id/sort_order_title"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:layout_below="@id/begin_date"
+        android:textColor="@color/colorAccent"/>
+    <Spinner
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/sort_orders_array"
+        android:layout_below="@+id/sort_order_title"
+        android:id="@+id/sort_order"
+        android:layout_centerHorizontal="true"></Spinner>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New Desk Values"
+        android:id="@+id/news_desk_value_title"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/sort_order"
+        android:layout_marginTop="20dp"
+        android:textColor="@color/colorAccent"/>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/news_desk_value_title"
+        android:id="@+id/news_desk_value_checkboxes">
+        <CheckBox android:id="@+id/checkbox_arts"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/arts" />
+        <CheckBox android:id="@+id/checkbox_fns"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/fashion_and_style" />
+        <CheckBox android:id="@+id/checkbox_sports"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/sports" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:paddingLeft="4.0dip"
+        android:paddingTop="5.0dip"
+        android:paddingRight="4.0dip"
+        android:paddingBottom="1.0dip"
+        android:layout_width="fill_parent" android:layout_height="wrap_content"
+        android:layout_below="@+id/news_desk_value_checkboxes">
+
+        <Button
+            android:id="@+id/confirm_button"
+            android:layout_width="0.0dip" android:layout_height="fill_parent"
+            android:text="Confirm"
+            android:layout_weight="1.0" />
+
+        <Button
+            android:id="@+id/cancel_button"
+            android:layout_width="0.0dip" android:layout_height="fill_parent"
+            android:text="Cancel"
+            android:layout_weight="1.0" />
+
+    </LinearLayout>
+
+</RelativeLayout>

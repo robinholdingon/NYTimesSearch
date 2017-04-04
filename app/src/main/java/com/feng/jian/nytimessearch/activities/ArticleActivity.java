@@ -31,10 +31,8 @@ public class ArticleActivity extends AppCompatActivity {
         webview.getSettings().setLoadsImagesAutomatically(true);
         webview.getSettings().setJavaScriptEnabled(true);
         webview.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
-        // Configure the client to use when opening URLs
         webview.setWebViewClient(new MyBrowser());
-        // Load the initial URL
-        webview.loadUrl("https://www.airbnb.com");
+        webview.loadUrl(article.getWebUrl());
     }
 
     private class MyBrowser extends WebViewClient {

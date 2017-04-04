@@ -1,10 +1,9 @@
 package com.feng.jian.nytimessearch.activities;
 
+import android.app.FragmentManager;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
@@ -28,20 +27,29 @@ import org.json.JSONObject;
 import org.parceler.Parcels;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import adapter.ArticleArrayAdapter;
 import cz.msebera.android.httpclient.Header;
+import cz.msebera.android.httpclient.util.TextUtils;
+import fragments.FilterPopupFragment;
+import fragments.OnFilterData;
 import model.Article;
 
-public class SearchActivity extends AppCompatActivity {
+public class SearchActivity extends AppCompatActivity implements OnFilterData {
 
     GridView gvResults;
 
     ArrayList<Article> articles;
     ArticleArrayAdapter adapter;
 
-    public static String API_URL = "http://api.nytimes.com/svc/search/v2/articlesearch.json";
+    public static String API_URL = "https://api.nytimes.com/svc/search/v2/articlesearch.json";
     public static String API_KEY = "bd3dfed52104470b9321185cb5c9a593";
+
+    private String date = "2017-03-01";
+    private String order;
+    private String query = "abc";
+    private ArrayList<String> newsDeskValues = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,14 +60,7 @@ public class SearchActivity extends AppCompatActivity {
 
         setupViews();
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+        onArticleSearch();
     }
 
     private void setupViews() {
@@ -96,7 +97,8 @@ public class SearchActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 searchView.clearFocus();
-                onArticleSearch(et.getText().toString());
+                SearchActivity.this.query = et.getText().toString();
+                onArticleSearch();
                 return true;
             }
 
@@ -118,18 +120,48 @@ public class SearchActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_search) {
             return true;
+        } else if (id == R.id.action_filter) {
+            FragmentManager fm = getFragmentManager();
+            Calendar c = Calendar.getInstance();
+            String[] dateInfo = date.split("-");
+            c.set(Integer.parseInt(dateInfo[0]), Integer.parseInt(dateInfo[1]) - 1, Integer.parseInt(dateInfo[2]));
+
+            FilterPopupFragment.newInstance(order, c.getTime(), newsDeskValues).show(fm, "Filter Popup");
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    public void onArticleSearch(String query) {
+    public void onArticleSearch() {
         AsyncHttpClient client = new AsyncHttpClient();
 
         RequestParams params = new RequestParams();
         params.put("api-key", API_KEY);
         params.put("page", 0);
         params.put("q", query);
+        if (!TextUtils.isEmpty(date)) {
+            params.put("begin_date", date.replace("-", ""));
+        }
+        if (!TextUtils.isEmpty(order)) {
+            params.put("sort", order.toLowerCase());
+        }
+        if (!newsDeskValues.isEmpty()) {
+            //fq=news_desk:("Education"%20"Health")
+            String ndvQueyr = "news_desk:(";
+            for (int i = 0; i < newsDeskValues.size(); i ++) {
+                String value = newsDeskValues.get(i);
+                String quotes = "%22" + value + "%22";
+                if (i < newsDeskValues.size() - 1) {
+                    quotes += "%20";
+                }
+                ndvQueyr += quotes;
+            }
+            ndvQueyr += ")";
+            params.put("fq", ndvQueyr);
+        }
+
+        Log.d("DEBUG", params.toString());
+
         client.get(API_URL, params, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
@@ -137,13 +169,22 @@ public class SearchActivity extends AppCompatActivity {
                 try {
                     articleJsonResults = response.getJSONObject("response").getJSONArray("docs");
                     articles = Article.fromJSONArray(articleJsonResults);
+                    adapter.clear();
                     adapter.addAll(articles);
-                    Log.d("DEBUG", articles.toString());
                 } catch (JSONException e) {
-
+                    Log.e("ERROR" , e.toString());
                 }
             }
         });
         //Toast.makeText(this, "Searching for " + query, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void parseFilterData(String date, String order, ArrayList<String> newsDeskValues) {
+        this.date = date;
+        this.order = order;
+        this.newsDeskValues.clear();
+        this.newsDeskValues.addAll(newsDeskValues);
+        onArticleSearch();
     }
 }
