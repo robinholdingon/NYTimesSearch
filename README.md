@@ -47,7 +47,7 @@ The following **additional** features are implemented:
 
 Here's a walkthrough of implemented user stories:
 
-![nytimessearch](http://i.imgur.com/yrOreib.gifv)
+![nytimessearch](https://cloud.githubusercontent.com/assets/1848338/24682141/0c4e5c54-194d-11e7-94d4-990682db87e7.gif)
 
 GIF created with [LiceCap](http://www.cockos.com/licecap/).
 
