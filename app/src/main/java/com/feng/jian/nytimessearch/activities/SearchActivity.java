@@ -1,18 +1,17 @@
 package com.feng.jian.nytimessearch.activities;
 
 import android.app.FragmentManager;
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.GridView;
 
@@ -24,12 +23,12 @@ import com.loopj.android.http.RequestParams;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.parceler.Parcels;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 
 import adapter.ArticleArrayAdapter;
+import adapter.SpacesItemDecoration;
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.util.TextUtils;
 import fragments.FilterPopupFragment;
@@ -64,22 +63,19 @@ public class SearchActivity extends AppCompatActivity implements OnFilterData {
     }
 
     private void setupViews() {
-        gvResults = (GridView) findViewById(R.id.gvResults);
-
+        RecyclerView rvArticles = (RecyclerView) findViewById(R.id.gvResults);
+        SpacesItemDecoration decoration = new SpacesItemDecoration(1);
+        rvArticles.addItemDecoration(decoration);
         articles = new ArrayList<>();
         adapter = new ArticleArrayAdapter(this, articles);
-        gvResults.setAdapter(adapter);
+        rvArticles.setAdapter(adapter);
 
-        gvResults.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent i = new Intent(getApplicationContext(), ArticleActivity.class);
-                Article article = adapter.getItem(position);
+        StaggeredGridLayoutManager gridLayoutManager =
+                new StaggeredGridLayoutManager(2,
+                        StaggeredGridLayoutManager.VERTICAL);
+        rvArticles.setLayoutManager(gridLayoutManager);
+//
 
-                i.putExtra("article", Parcels.wrap(article));
-                startActivity(i);
-            }
-        });
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -168,15 +164,14 @@ public class SearchActivity extends AppCompatActivity implements OnFilterData {
                 JSONArray articleJsonResults;
                 try {
                     articleJsonResults = response.getJSONObject("response").getJSONArray("docs");
-                    articles = Article.fromJSONArray(articleJsonResults);
-                    adapter.clear();
-                    adapter.addAll(articles);
+                    articles.clear();
+                    articles.addAll(Article.fromJSONArray(articleJsonResults));
+                    adapter.notifyDataSetChanged();
                 } catch (JSONException e) {
                     Log.e("ERROR" , e.toString());
                 }
             }
         });
-        //Toast.makeText(this, "Searching for " + query, Toast.LENGTH_LONG).show();
     }
 
     @Override

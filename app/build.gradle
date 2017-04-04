@@ -35,4 +35,5 @@ dependencies {
     compile 'com.android.support:support-v4:25.3.0'
     testCompile 'junit:junit:4.12'
     annotationProcessor 'org.parceler:parceler:1.1.6'
+    compile 'com.android.support:recyclerview-v7:25.2.0'
 }

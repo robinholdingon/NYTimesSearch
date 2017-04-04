@@ -178,7 +178,7 @@ public class FilterPopupFragment extends DialogFragment{
         this.month = month;
         this.day = dayOfMonth;
         String stringMonth = month < 10 ? "0" + Integer.toString(month) : Integer.toString(month);
-        String stringDate = month < 10 ? "0" + Integer.toString(day) : Integer.toString(day);
+        String stringDate = dayOfMonth < 10 ? "0" + Integer.toString(day) : Integer.toString(day);
         tvStartDate.setText(String.format("%d-%s-%s", year, stringMonth, stringDate));
     }
 
